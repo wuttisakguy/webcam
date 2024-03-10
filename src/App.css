@@ -1,0 +1,19 @@
+.webcam {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .input-field {
+    width: 50px;
+    height: 20px;
+    background-color: #ffffff;
+    color: #000000;
+    font-size: 16px;
+    border: 2px solid;
+  }
+  
+  .label {
+    font-weight: regular;
+    font-size: 16px;
+    color: #000000;
+  }
