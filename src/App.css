@@ -9,11 +9,66 @@
     background-color: #ffffff;
     color: #000000;
     font-size: 16px;
-    border: 2px solid;
+    border: 1px solid;
+    border-radius: 5px;
+  }
+
+  .input-field-selection {
+    width: 120px;
+    height: 25px;
+    background-color: #ffffff;
+    color: #000000;
+    font-size: 14px;
+    border: 1px solid;
+    border-radius: 5px;
+  }
+
+  .input-field-position {
+    width: 200px;
+    height: 20px;
+    background-color: #ffffff;
+    color: #000000;
+    font-size: 16px;
+    border: 1px solid;
+    border-radius: 5px;
   }
   
   .label {
     font-weight: regular;
     font-size: 16px;
     color: #000000;
+    gap: 5px;
+  }
+
+
+  .select{
+    padding-top: 20px;
+  }
+
+  .flex{
+    display: flex;
+    gap: 10px;
+    padding-top: 20px;
+  }
+
+  .item{
+    grid-row-start: 2;
+  }
+
+  .buttonstart{
+    background-color: green;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .buttonstop{
+    background-color: red;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
   }

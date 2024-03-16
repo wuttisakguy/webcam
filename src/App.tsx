@@ -6,13 +6,26 @@ import "./App.css";
 
 const App: React.FC = () => {
   const webcamRef: any = useRef(null);
-  const [captureInterval, setCaptureInterval] = useState(5);
+  const [captureInterval, setCaptureInterval] = useState({
+    hour: 0,
+    minute: 0,
+    second: 0,
+  });
   const [startTime, setStartTime] = useState({ hour: 0, minute: 0, second: 0 });
-  const [selectedOption, setSelectedOption] = useState('');
-  const [textInputValuePosition, setTextInputValuePosition] = useState('');
+  const [selectedOption, setSelectedOption] = useState("");
+  const [textInputValuePosition, setTextInputValuePosition] = useState("");
+  const [running, setRunning] = useState(false);
 
-  const handleIntervalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCaptureInterval(Number(event.target.value));
+  const handleIntervalChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    if (!running) {
+      const value = Number(event.target.value);
+      if (value >= 0) {
+        setCaptureInterval({ ...captureInterval, [field]: value });
+      }
+    }
   };
 
   const handleSelectChange = (event: any) => {
@@ -27,7 +40,17 @@ const App: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     field: string
   ) => {
-    setStartTime({ ...startTime, [field]: Number(event.target.value) });
+    if (!running) {
+      setStartTime({ ...startTime, [field]: Number(event.target.value) });
+    }
+  };
+
+  const startCapture = () => {
+    setRunning(true);
+  };
+
+  const stopCapture = () => {
+    setRunning(false);
   };
 
   const captureImage = async () => {
@@ -37,7 +60,7 @@ const App: React.FC = () => {
         const response = await axios.post("http://localhost:3001/upload", {
           imageSrc,
           selectedOption,
-          textInputValuePosition
+          textInputValuePosition,
         });
         console.log(response.data);
       } catch (error) {
@@ -47,82 +70,132 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        if (webcamRef.current) {
-          webcamRef.current.srcObject = stream;
+    if (running) {
+      const captureIntervalId = setInterval(() => {
+        const thaiTime = moment().tz("Asia/Bangkok");
+        const startDateTime = moment().tz("Asia/Bangkok").set(startTime);
+
+        if (thaiTime.isAfter(startDateTime)) {
+          captureImage();
         }
-      })
-      .catch((error) => console.error("Error accessing webcam:", error));
+      }, (captureInterval.hour * 3600 + captureInterval.minute * 60 + captureInterval.second) * 1000);
 
-    const captureIntervalId = setInterval(() => {
-      const thaiTime = moment().tz("Asia/Bangkok");
-      const startDateTime = moment().tz("Asia/Bangkok").set(startTime); // เวลาเริ่มถ่ายภาพ
-      if (thaiTime.isAfter(startDateTime)) {
-        captureImage();
-      }
-    }, captureInterval * 1000);
-
-    return () => {
-      clearInterval(captureIntervalId);
-      if (webcamRef.current && webcamRef.current.srcObject) {
-        const tracks = webcamRef.current.srcObject.getTracks();
-        tracks.forEach((track: any) => track.stop());
-      }
-    };
-  }, [captureInterval, startTime]);
+      return () => {
+        clearInterval(captureIntervalId);
+      };
+    }
+  }, [running, captureInterval, startTime]);
 
   return (
-    <div className="flex">
+    <div className="">
       <Webcam className="webcam" audio={false} ref={webcamRef} />
       <br />
-      <label className="label" htmlFor="interval">ถ่ายทุกๆ (วินาที):</label>
-      <input
-        className="input-field"
-        type="number"
-        id="interval"
-        value={captureInterval}
-        onChange={handleIntervalChange}
-      />
+      <div className="flex">
+        <div>
+          <label className="label" htmlFor="intervalHour">
+            ถ่ายทุกๆ
+          </label>
+        </div>
+        <input
+          className="input-field"
+          type="number"
+          id="intervalHour"
+          value={captureInterval.hour}
+          onChange={(e) => handleIntervalChange(e, "hour")}
+        />
+        <div>
+          <label className="label" htmlFor="intervalHour">
+            ชั่วโมง
+          </label>
+        </div>
+        <input
+          className="input-field"
+          type="number"
+          id="intervalMinute"
+          value={captureInterval.minute}
+          onChange={(e) => handleIntervalChange(e, "minute")}
+        />
+        <div>
+          <label className="label" htmlFor="intervalMinute">
+            นาที
+          </label>
+        </div>
+        <input
+          className="input-field"
+          type="number"
+          id="intervalSecond"
+          value={captureInterval.second}
+          onChange={(e) => handleIntervalChange(e, "second")}
+        />
+        <div>
+          <label className="label" htmlFor="intervalSecond">
+            วินาที
+          </label>
+        </div>
+      </div>
       <br />
-      <label htmlFor="startTimeHour">เวลาเริ่มถ่ายภาพ (ชั่วโมง):</label>
-      <input
-        type="number"
-        id="startTimeHour"
-        value={startTime.hour}
-        onChange={(e) => handleStartTimeChange(e, "hour")}
-      />
+      <div className="time flex">
+        <label htmlFor="startTimeHour">เวลาเริ่มถ่ายภาพ (ชั่วโมง)</label>
+        <input
+          className="input-field"
+          type="number"
+          id="startTimeHour"
+          value={startTime.hour}
+          onChange={(e) => handleStartTimeChange(e, "hour")}
+        />
 
-      <label htmlFor="startTimeMinute">(นาที):</label>
-      <input
-        type="number"
-        id="startTimeMinute"
-        value={startTime.minute}
-        onChange={(e) => handleStartTimeChange(e, "minute")}
-      />
+        <label htmlFor="startTimeMinute">(นาที)</label>
+        <input
+          className="input-field"
+          type="number"
+          id="startTimeMinute"
+          value={startTime.minute}
+          onChange={(e) => handleStartTimeChange(e, "minute")}
+        />
 
-      <label htmlFor="startTimeSecond">(วินาที):</label>
-      <input
-        type="number"
-        id="startTimeSecond"
-        value={startTime.second}
-        onChange={(e) => handleStartTimeChange(e, "second")}
-      />
-      <div>
-      <label htmlFor="dropdown">เลือกข้อมูล:</label>
-      <select id="dropdown" value={selectedOption} onChange={handleSelectChange}>
-        <option value="">กรุณาเลือก</option>
-        <option value="watermeter">มิเตอร์น้ำ</option>
-        <option value="electricmeter">มิเตอร์ไฟ</option>
-      </select>
+        <label htmlFor="startTimeSecond">(วินาที)</label>
+        <input
+          className="input-field"
+          type="number"
+          id="startTimeSecond"
+          value={startTime.second}
+          onChange={(e) => handleStartTimeChange(e, "second")}
+        />
+      </div>
+      <div className="select flex">
+        <label htmlFor="dropdown">เลือกข้อมูล</label>
+        <select
+          className="input-field-selection"
+          id="dropdown"
+          value={selectedOption}
+          onChange={handleSelectChange}
+        >
+          <option value="">กรุณาเลือก</option>
+          <option value="watermeter">มิเตอร์น้ำ</option>
+          <option value="electricmeter">มิเตอร์ไฟ</option>
+        </select>
+      </div>
       <br />
-      <label htmlFor="textInput">ตำแหน่ง:</label>
-      <input type="text" id="textInput" value={textInputValuePosition} onChange={handleTextInputChange} />
-      <br />
+      <div className="flex">
+        <label htmlFor="textInput">ตำแหน่ง</label>
+        <input
+          className="input-field-position"
+          type="text"
+          id="textInput"
+          value={textInputValuePosition}
+          onChange={handleTextInputChange}
+        />
+        <br />
+      </div>
+      <div className="flex">
+        <button className="buttonstart" onClick={startCapture}>
+          Start
+        </button>
+        <button className="buttonstop" onClick={stopCapture}>
+          Stop
+        </button>
+      </div>
     </div>
-    </div>
-    
   );
 };
 
