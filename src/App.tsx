@@ -12,6 +12,7 @@ const App: React.FC = () => {
     second: 0,
   });
   const [startTime, setStartTime] = useState({ hour: 0, minute: 0, second: 0 });
+  const [endTime, setEndTime] = useState({ hour: 0, minute: 0, second: 0 });
   const [selectedOption, setSelectedOption] = useState("");
   const [textInputValuePosition, setTextInputValuePosition] = useState("");
   const [running, setRunning] = useState(false);
@@ -45,6 +46,15 @@ const App: React.FC = () => {
     }
   };
 
+  const handleEndTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    if (!running) {
+      setEndTime({ ...endTime, [field]: Number(event.target.value) });
+    }
+  };
+
   const startCapture = () => {
     setRunning(true);
   };
@@ -74,17 +84,20 @@ const App: React.FC = () => {
       const captureIntervalId = setInterval(() => {
         const thaiTime = moment().tz("Asia/Bangkok");
         const startDateTime = moment().tz("Asia/Bangkok").set(startTime);
-
-        if (thaiTime.isAfter(startDateTime)) {
+        const endDateTime = moment().tz("Asia/Bangkok").set(endTime);
+  
+        if (thaiTime.isAfter(startDateTime) && thaiTime.isBefore(endDateTime)) {
           captureImage();
+        } else {
+          stopCapture(); // เวลาเกินหรือถึงเวลาสิ้นสุด หยุดการถ่ายรูป
         }
       }, (captureInterval.hour * 3600 + captureInterval.minute * 60 + captureInterval.second) * 1000);
-
+  
       return () => {
         clearInterval(captureIntervalId);
       };
     }
-  }, [running, captureInterval, startTime]);
+  }, [running, captureInterval, startTime, endTime]);
 
   return (
     <div className="">
@@ -160,6 +173,34 @@ const App: React.FC = () => {
           id="startTimeSecond"
           value={startTime.second}
           onChange={(e) => handleStartTimeChange(e, "second")}
+        />
+      </div>
+      <div className="time flex">
+        <label htmlFor="endTimeHour">เวลาสิ้นสุดถ่ายภาพ (ชั่วโมง)</label>
+        <input
+          className="input-field"
+          type="number"
+          id="endTimeHour"
+          value={endTime.hour}
+          onChange={(e) => handleEndTimeChange(e, "hour")}
+        />
+
+        <label htmlFor="endTimeMinute">(นาที)</label>
+        <input
+          className="input-field"
+          type="number"
+          id="endTimeMinute"
+          value={endTime.minute}
+          onChange={(e) => handleEndTimeChange(e, "minute")}
+        />
+
+        <label htmlFor="endTimeSecond">(วินาที)</label>
+        <input
+          className="input-field"
+          type="number"
+          id="endTimeSecond"
+          value={endTime.second}
+          onChange={(e) => handleEndTimeChange(e, "second")}
         />
       </div>
       <div className="select flex">
