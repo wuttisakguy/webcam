@@ -19,7 +19,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(bodyParser.json({ limit: "10mb" }));
 
 app.post("/upload", async (req, res) => {
-  const { imageSrc, selectedOption, textInputValuePosition } = req.body;
+  const { imageSrc, selectedOption, textInputValuePosition, selectedName } = req.body;
   const matches = imageSrc.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
   
   try {
@@ -29,6 +29,7 @@ app.post("/upload", async (req, res) => {
         type: selectedOption,
         position: textInputValuePosition ,
         imageSrc: matches.input,
+        name: selectedName,
       }
     );
 
