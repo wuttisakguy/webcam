@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const [endTime, setEndTime] = useState({ hour: 0, minute: 0, second: 0 });
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedName, setSelectedName] = useState("");
-  const [textInputValuePosition, setTextInputValuePosition] = useState("");
+  // const [textInputValuePosition, setTextInputValuePosition] = useState("");
   const [running, setRunning] = useState(false);
   const [firstCaptureDone, setFirstCaptureDone] = useState(false);
 
@@ -42,9 +42,9 @@ const App: React.FC = () => {
     setSelectedName(event.target.value);
   };
 
-  const handleTextInputChange = (event: any) => {
-    setTextInputValuePosition(event.target.value);
-  };
+  // const handleTextInputChange = (event: any) => {
+  //   setTextInputValuePosition(event.target.value);
+  // };
 
   const handleStartTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -80,7 +80,7 @@ const App: React.FC = () => {
           imageSrc,
           selectedOption,
           selectedName,
-          textInputValuePosition,
+          // textInputValuePosition,
         });
         console.log(response.data);
       } catch (error) {
@@ -279,24 +279,16 @@ const App: React.FC = () => {
             onChange={handleNameSelectChange}
           >
             <option value="">กรุณาเลือก</option>
-            <option value="name1">ชื่อ 1</option>
-            <option value="name2">ชื่อ 2</option>
+            <option value="name1">ชั้นที่ 1</option>
+            <option value="name2">ชั้นที่ 2</option>
+            <option value="name2">ชั้นที่ 3</option>
+            <option value="name2">ชั้นที่ 4</option>
+            <option value="name2">ชั้นที่ 5</option>
+            <option value="name2">ชั้นที่ 6</option>
           </select>
         </div>
       </div>
       <br />
-      <div className="flex flex-col border-[1px] border-[#e6e6e6] rounded-[9px] py-2 px-8 bg-white w-[100%] justify-start items-start">
-        <div className="pb-3">
-          <label>ตำแหน่ง</label>
-        </div>
-        <input
-          className="border-[1px] border-[#dadada] rounded-[9px] py-2 px-2 bg-white w-[350px]"
-          type="text"
-          id="textInput"
-          value={textInputValuePosition}
-          onChange={handleTextInputChange}
-        />
-      </div>
       <div className="flex gap-3 pt-5">
         <button
           className="w-[50px] duration-300 hover:bg-green-600 text-white text-[16px] font-[400] rounded-md bg-green-500  py-3 px-4 flex justify-center items-center gap-3"
